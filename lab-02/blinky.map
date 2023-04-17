@@ -1,0 +1,88 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x0000000008000000 0x0000000000080000 xr
+SRAM             0x0000000020000000 0x0000000000020000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/src/startup.o
+LOAD build/src/main.o
+
+.text           0x0000000008000000       0xd8
+ *(.isr_vectors)
+ .isr_vectors   0x0000000008000000       0x40 build/src/startup.o
+                0x0000000008000000                vectors
+ *(.text)
+ .text          0x0000000008000040       0x8c build/src/startup.o
+                0x0000000008000040                reset_handler
+                0x00000000080000c4                busfault_handler
+                0x00000000080000c4                systick_handler
+                0x00000000080000c4                memmanage_handler
+                0x00000000080000c4                svc_handler
+                0x00000000080000c4                default_handler
+                0x00000000080000c4                debugmon_handler
+                0x00000000080000c4                pendsv_handler
+                0x00000000080000c4                usagefault_handler
+                0x00000000080000c4                hardfault_handler
+                0x00000000080000c4                nmi_handler
+ .text          0x00000000080000cc        0xc build/src/main.o
+                0x00000000080000cc                main
+                0x00000000080000d8                . = ALIGN (0x4)
+ *(.rodata)
+                0x00000000080000d8                . = ALIGN (0x4)
+                0x00000000080000d8                _la_data = .
+
+.glue_7         0x00000000080000d8        0x0
+ .glue_7        0x00000000080000d8        0x0 linker stubs
+
+.glue_7t        0x00000000080000d8        0x0
+ .glue_7t       0x00000000080000d8        0x0 linker stubs
+
+.vfp11_veneer   0x00000000080000d8        0x0
+ .vfp11_veneer  0x00000000080000d8        0x0 linker stubs
+
+.v4_bx          0x00000000080000d8        0x0
+ .v4_bx         0x00000000080000d8        0x0 linker stubs
+
+.iplt           0x00000000080000d8        0x0
+ .iplt          0x00000000080000d8        0x0 build/src/startup.o
+
+.rel.dyn        0x00000000080000d8        0x0
+ .rel.iplt      0x00000000080000d8        0x0 build/src/startup.o
+
+.data           0x0000000020000000        0x0 load address 0x00000000080000d8
+                0x0000000020000000                _sdata = .
+ *(.data)
+ .data          0x0000000020000000        0x0 build/src/startup.o
+ .data          0x0000000020000000        0x0 build/src/main.o
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _edata = .
+
+.igot.plt       0x0000000020000000        0x0 load address 0x00000000080000d8
+ .igot.plt      0x0000000020000000        0x0 build/src/startup.o
+
+.bss            0x0000000020000000        0x0 load address 0x00000000080000d8
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _sbss = .
+ *(.bss)
+ .bss           0x0000000020000000        0x0 build/src/startup.o
+ .bss           0x0000000020000000        0x0 build/src/main.o
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _ebss = .
+OUTPUT(blinky.elf elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x0000000000000000       0x49
+ .comment       0x0000000000000000       0x49 build/src/startup.o
+                                         0x4a (size before relaxing)
+ .comment       0x0000000000000049       0x4a build/src/main.o
+
+.ARM.attributes
+                0x0000000000000000       0x2e
+ .ARM.attributes
+                0x0000000000000000       0x2e build/src/startup.o
+ .ARM.attributes
+                0x000000000000002e       0x2e build/src/main.o
